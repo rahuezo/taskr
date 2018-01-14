@@ -1,0 +1,91 @@
+.navbar-brand {
+  opacity: 0.8;
+  transition: all ease-out 0.2s;
+}
+
+.navbar-brand:hover {
+  opacity: 1;
+}
+
+.navbar-brand img {
+  height: 30px;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.btn.btn-link {
+  color: #AAA;
+  transition: all ease-out 0.2s;
+}
+
+.btn.btn-link:hover {
+  color: #FFF;
+  text-decoration: none;
+}
+
+.btn.btn-link:focus {
+  text-decoration: none;
+}
+
+.sign-up-link {
+  color: #BBB;
+  transition: all ease-out 0.2s;
+}
+
+.sign-up-link:hover {
+  color: #666;
+}
+
+#sign-in-modal input {
+  color: #888;
+}
+
+#hero-jumbotron {
+  /* height: 45vh; */
+}
+
+#hero-jumbotron .subtitle {
+  font-size: 1.5rem;
+}
+
+#login-container {
+  padding: 5% 10% 5% 10%;
+}
+
+#global-search {
+  /* background: red;  */
+}
+
+span.invisible {
+  display: none;
+}
+
+.border-focus {
+  border-color: #AAA;
+}
+
+.table.table-hover tr {
+  cursor: pointer;
+}
+
+/* CUSTOM HR  */
+
+hr.style-eight {
+    overflow: visible; /* For IE */
+    padding: 0;
+    border: 0.02em solid rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.08);
+    text-align: center;
+}
+hr.style-eight:after {
+    content: "OR";
+    display: inline-block;
+    position: relative;
+    top: -0.9em;
+    font-size: 1em;
+    padding: 0 0.8em;
+    background: white;
+}

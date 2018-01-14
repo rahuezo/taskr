@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+    <!-- Social Buttons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.css" />
+
+    <!-- Local CSS  -->
+    <link rel="stylesheet" href="{% static 'global/css/style.css' %}">
+
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'global/img/taskr logo favicon.png' %}">
+
+    <title>taskr: Dashboard</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      {# <div class="container"> #}
+      <a class="navbar-brand" href="#">
+        <img src="{% static 'global/img/taskr logo.png' %}" alt=""> taskr
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% if request.user.is_authenticated %}
+          <ul class="navbar-nav ml-auto mr-auto">
+            <form class="form-inline mx-1 my-1">
+              <div class="input-group">
+                <input type="text" onfocus="searchFocus(this);" onblur="searchBlur(this);" class="form-control bg-dark" placeholder="e.g. webdev, tutoring..." aria-label="Username" aria-describedby="basic-addon1">
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-light"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+              </div>
+            </form>
+          </ul>
+        {% endif %}
+        <ul class="navbar-nav text-center">
+          {% if request.user.is_authenticated %}
+            <li class="nav-item dropdown mx-1 my-1">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i> Welcome, {{ request.user.username }}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#"><i class="fa fa-cog text-muted"></i> Settings</a>
+                <a class="dropdown-item" href="#"><i class="fa fa-line-chart text-muted"></i> Activity Log</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fa fa-power-off text-muted"></i> Sign Out</a>
+              </div>
+            </li>
+          {% else %}
+            <li class="nav-item active">
+              <button class="btn btn-outline-light mx-1 my-1" data-toggle="modal" data-target="#task-modal">Sign in <span class="sr-only">(current)</span></button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-link mx-1 my-1" type="button" name="button">Sign up</button>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      {# </div> #}
+    </nav>
+    <div class="container my-4">
+      {% if messages %}
+        {% for message in messages %}
+          {% ifequal message.tags "login_success success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-home" aria-hidden="true"></i></strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+        {% endfor %}
+      {% endif %}
+      {% for job in jobs %}
+      <div class="card my-4 {% if forloop.counter0|divisibleby:'2' %}border-focus{% endif %}">
+        <div class="card-body">
+          {% with job.task_set.all|length as ntasks %}
+          <h4 class="card-title">
+            {{ job.title }}
+            <small class="text-muted">
+              &middot; {{ ntasks }} {% if ntasks == 1%}task{% else %}tasks{% endif %} &middot; {{ job.modified|date:"F d, Y" }}
+            </small>
+          </h4>
+          <p class="card-text lead">{{ job.description }}</p>
+          {% if  ntasks > 0 %}
+            <p class="lead text-center text-muted">Showing most recent task</p>
+            <table class="table table-sm my-4 text-center">
+              <thead>
+                <tr class="text-muted">
+                  <td scope="col">Title</td>
+                  <td scope="col">Date</td>
+                  <td scope="col">Start</td>
+                  <td scope="col">End</td>
+                  <td scope="col">Notes</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% with job.task_set.all.last as task %}
+                <tr>
+                  <td>{{ task.title }}</td>
+                  <td>{{ task.date|date:"m/d/y" }}</td>
+                  <td>{{ task.start|time:"g:i A"|lower }}</td>
+                  <td>{{ task.end|time:"g:i A"|lower }}</td>
+                  <td>{% if task.notes|length == 0 %}<i class="fa fa-ban text-muted" aria-hidden="true"></i>{% else %}<em>{{ task.notes|truncatewords:10 }}</em>{% endif %}</td>
+                </tr>
+                {% endwith %}
+              </tbody>
+            </table>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#task-modal" onclick="setModalParams('{{ job.title }}', {{ job.pk }});"><i class="fa fa-plus" aria-hidden="true"></i> Add Task</button>
+              </div>
+              <div class="col-sm-6">
+                <a href="#" class="btn btn-outline-primary btn-block mb-2"><i class="fa fa-eye" aria-hidden="true"></i> View Job</a>
+              </div>
+            </div>
+          {% else %}
+            <p class="text-center text-muted lead my-4">There are no tasks yet.</p>
+            <div class="row">
+              <div class="col-sm-6">
+                <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#task-modal" onclick="setModalParams('{{ job.title }}', {{ job.pk }});"><i class="fa fa-plus" aria-hidden="true"></i> Add Task</button>
+              </div>
+              <div class="col-sm-6">
+                <a href="#" class="btn btn-outline-primary btn-block mb-2"><i class="fa fa-eye" aria-hidden="true"></i> View Job</a>
+              </div>
+            </div>
+          {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Centered Add Task Modal -->
+    <div class="modal fade" id="task-modal" tabindex="-1" role="dialog" aria-labelledby="task-modalTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="header px-3 py-2">
+            <p class="h4 text-center mb-4">Add Task to <strong id="project-name"></strong>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </p>
+          </div>
+          <div class="modal-body">
+            <span id="add-task-form-error"></span>
+            <form id="add-task-form" action="{% url 'dashboard:tasks:add_task' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" id="job-id" name="job-id" value="">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="task-title">Title</label>
+                    <input type="email" class="form-control" id="task-title" name="task-title" placeholder="e.g. Wednesday Task">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="task-date">Date *</label>
+                    <input type="date" class="form-control" id="task-date" name="task-date" required />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="task-start">Start *</label>
+                    <input type="time" class="form-control" id="task-start" name="task-start" required />
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="task-end">End *</label>
+                    <input type="time" class="form-control" id="task-end" name="task-end" required />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="task-notes">Notes</label>
+                    <textarea class="form-control" id="task-notes" name="task-notes"></textarea>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary btn-block" onclick="validateForm();">Submit</button>
+              <p class="my-4 text-muted text-center">Fields with * are required</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+    <!-- Local JS -->
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+
+
+      });
+
+      function searchFocus(element) {
+        $(element).removeClass('bg-dark');
+        $(element).css('width', '400px !important')
+
+      }
+      function searchBlur(element) {
+        $(element).addClass('bg-dark');
+      }
+
+      function setModalParams(title, job_id) {
+        console.log(job_id);
+        $('#project-name').text(title);
+        $('#job-id').val(job_id);
+
+        console.log($('#job-id').val());
+      }
+
+      function validateForm() {
+        let task_date = $('#task-date').val();
+        let start = $('#task-start').val();
+        let end = $('#task-end').val();
+        let code = `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+          <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> Date, Start, and End are required arguments!
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>`;
+
+        if (task_date.length > 0 && start.length > 0 && end.length > 0) {
+          console.log("Can submit");
+          $('#add-task-form').submit();
+        } else {
+          console.log("Cannot submit");
+          $('#add-task-form-error').append(code);
+        }
+      }
+    </script>
+  </body>
+</html>

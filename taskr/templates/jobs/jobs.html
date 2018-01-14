@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+    <!-- Social Buttons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.css" />
+
+    <!-- Local CSS  -->
+    <link rel="stylesheet" href="{% static 'global/css/style.css' %}">
+
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'global/img/taskr logo favicon.png' %}">
+
+    <title>taskr: Job View</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      {# <div class="container"> #}
+      <a class="navbar-brand" href="#">
+        <img src="{% static 'global/img/taskr logo.png' %}" alt=""> taskr
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% if request.user.is_authenticated %}
+          <ul class="navbar-nav ml-auto mr-auto">
+            <form class="form-inline mx-1 my-1">
+              <div class="input-group">
+                <input type="text" onfocus="searchFocus(this);" onblur="searchBlur(this);" class="form-control bg-dark" placeholder="e.g. webdev, tutoring..." aria-label="Username" aria-describedby="basic-addon1">
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-light"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+              </div>
+            </form>
+          </ul>
+        {% endif %}
+        <ul class="navbar-nav text-center">
+          {% if request.user.is_authenticated %}
+            <li class="nav-item dropdown mx-1 my-1">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i> Welcome, {{ request.user.username }}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#"><i class="fa fa-cog text-muted"></i> Settings</a>
+                <a class="dropdown-item" href="#"><i class="fa fa-line-chart text-muted"></i> Activity Log</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fa fa-power-off text-muted"></i> Sign Out</a>
+              </div>
+            </li>
+          {% else %}
+            <li class="nav-item active">
+              <button class="btn btn-outline-light mx-1 my-1" data-toggle="modal" data-target="#task-modal">Sign in <span class="sr-only">(current)</span></button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-link mx-1 my-1" type="button" name="button">Sign up</button>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      {# </div> #}
+    </nav>
+
+    <div class="container my-4 text-center">
+      {% if error %}
+      <h1 class="display-4">This job doesn't exist</h1>
+      {% else %}
+        {% with tasks|length as ntasks%}
+          <h1 class="display-4"><strong>{{ current_job.title }}</strong></h1>
+          <h3 class="my-4">{{ ntasks }} {% if ntasks == 1%}task{% else %}tasks{% endif %} &middot; {{ current_job.modified|date:"F d, Y" }}</h3>
+        {% endwith %}
+        <hr>
+
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a class="btn {% if view == 'list' %}btn-dark{% else %}btn-outline-dark{% endif %}" href="{{ request.path }}?view=list"><i class="fa fa-list" aria-hidden="true"></i></a>
+          <a class="btn {% if view != 'list' %}btn-dark{% else %}btn-outline-dark{% endif %}" href="{{ request.path }}?view=table"><i class="fa fa-table" aria-hidden="true"></i></a>
+        </div>
+
+        {% if view == 'list' %}
+          {% for task in tasks %}
+          <div class="card my-4 {% if forloop.counter0|divisibleby:'2' %}border-focus{% endif %}">
+            <div class="card-body">
+              <h4 class="card-title mb-4">
+                {{ task.title }}
+                <small class="text-muted">
+                  &middot; {{ task.date|date:"F d, Y" }}
+                </small>
+              </h4>
+              <div class="row text-center">
+                <div class="col-sm-6">
+                  <p class="lead"><strong>{{ task.start|time:"g:i A"|lower }}</strong> to <strong>{{ task.end|time:"g:i A"|lower }}</strong></p>
+                </div>
+                <div class="col-sm-6">
+                  <p class="lead">{% if task.notes|length == 0 %}<em class="text-muted"><i class="fa fa-ban" aria-hidden="true"></i> No Note</em>{% else %}<em>{{ task.notes }}</em>{% endif %}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <table class="table table-sm table-hover my-4">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Date</th>
+                <th scope="col">Start</th>
+                <th scope="col">End</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in tasks %}
+                <tr class="job-row" data-container="body" data-toggle="popover" data-placement="right"
+                data-content="<div class='btn-group' role='group' aria-label='Basic example'>
+                  <button type='button' class='btn btn-outline-dark'><i class='fa fa-pencil' aria-hidden='true'></i></button>
+                  <button type='button' class='btn btn-danger'>Delete <i class='fa fa-trash-o' aria-hidden='true'></i></button>
+                </div>'">
+                  <th scope="row">{{ task.title }}</th>
+                  <td>{{ task.date|date:"F d, Y" }}</td>
+                  <td>{{ task.start|time:"g:i A"|lower }}</td>
+                  <td>{{ task.end|time:"g:i A"|lower }}</td>
+                  <td>
+                    <span class="task-note-text">{% if task.notes|length == 0 %}<em class="text-muted"><i class="fa fa-ban" aria-hidden="true"></i> No Note</em>{% else %}<em>{{ task.notes }}</em>{% endif %}</span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      {% endif %}
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+    <!-- Local JS -->
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.job-row').popover({
+          html:true,
+        });
+
+      });
+
+      $('.job-row').on('click', function(e){
+        $('.job-row').not(this).popover('hide');
+      });
+
+      function moreOptions(element) {
+        let code = `<td>
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-outline-dark"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-danger">Delete <i class="fa fa-trash-o" aria-hidden="true"></i></button>
+          </div>
+        </td>`;
+        let ntd = $(element).children('td').length;
+        let notes = $(element).children('td')[ntd - 1];
+        let notes_copy = $(element).children('td')[ntd - 1];
+        console.log(notes);
+        if ( ntd > 4) {
+          // $($(element).children('td')[ntd - 1]).remove();
+          $(notes).html(notes_copy)
+        } else {
+          $(notes).html(code);
+        }
+
+        // $(element).append(code);
+      }
+    </script>
+  </body>
+</html>

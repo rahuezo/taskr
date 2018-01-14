@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+
+    <!-- Social Buttons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.css" />
+
+    <!-- Local CSS  -->
+    <link rel="stylesheet" href="{% static 'global/css/style.css' %}">
+
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'global/img/taskr logo favicon.png' %}">
+
+    <title>taskr: Login</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      {# <div class="container"> #}
+      <a class="navbar-brand ml-3" href="#">
+        <img src="{% static 'global/img/taskr logo.png' %}" alt=""> taskr
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <button class="btn btn-link mx-1 my-1" type="button" name="button">Sign up</button>
+          </li>
+        </ul>
+      </div>
+      {# </div> #}
+    </nav>
+
+    <div class="container text-center" id="login-container">
+      {% if messages %}
+        {% for message in messages %}
+          {% ifequal message.tags "login_error error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+        {% endfor %}
+      {% endif %}
+      <h1 class="display-4 mb-4">Sign In</h1>
+      <div class="social-login">
+        <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button>
+        <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Login with Facebook Account</button>
+        {# <button type="button" class="btn btn-block btn-social btn-google"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button> #}
+        {# <button type="button" class="btn btn-block btn-social btn-facebook"><i class="fa fa-facebook" aria-hidden="true"></i> Login with Google Account</button> #}
+      </div>
+
+      <hr class="style-eight my-4">
+      <form class="" action="{% url 'accounts:login' %}" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
+          </div>
+          <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"><i class="fa fa-lock" aria-hidden="true"></i></span>
+          </div>
+          <input type="password" name="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+      </form>
+      <p class="lead my-4 text-muted">Don't have an account? <a href="" class="sign-up-link">Sign Up</a></p>
+    </div>
+
+    <!--
+    <div class="jumbotron jumbotron-fluid" id="hero-jumbotron">
+      <div class="container">
+        <h1 class="display-4"><strong>Keep track of <strong>all</strong> the work you do.</strong></h1>
+        <p class="lead subtitle my-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+
+        <p class="lead mt-4">
+          <a class="btn btn-outline-dark btn-lg" href="#" role="button">Start Now <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+        </p>
+      </div>
+    </div>
+    -->
+
+    <!-- Centered Sign In Modal -->
+    <div class="modal fade" id="sign-in-modal" tabindex="-1" role="dialog" aria-labelledby="sign-in-modalTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="header px-3 py-2">
+            <p class="h4 text-center mb-4">Sign In
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </p>
+          </div>
+          <div class="modal-body text-center">
+            <div class="social-login">
+              <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button>
+              <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Login with Facebook Account</button>
+              {# <button type="button" class="btn btn-block btn-social btn-google"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button> #}
+              {# <button type="button" class="btn btn-block btn-social btn-facebook"><i class="fa fa-facebook" aria-hidden="true"></i> Login with Google Account</button> #}
+            </div>
+
+            <hr class="style-eight my-4">
+
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
+              </div>
+              <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1"><i class="fa fa-lock" aria-hidden="true"></i></span>
+              </div>
+              <input type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+            </div>
+            <button type="button" class="btn btn-primary btn-block">Sign In</button>
+            <p class="lead my-4 text-muted">Don't have an account? <a href="" class="sign-up-link">Sign Up</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+  </body>
+</html>
