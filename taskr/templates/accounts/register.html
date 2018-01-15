@@ -21,7 +21,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'global/img/taskr logo favicon.png' %}">
 
-    <title>taskr: Login</title>
+    <title>taskr: Sign Up</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -36,7 +36,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a href="{% url 'accounts:register' %}" class="btn btn-link mx-1 my-1">Sign up</a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-light mx-1 my-1">Sign in <span class="sr-only">(current)</span></a>
           </li>
         </ul>
       </div>
@@ -46,7 +46,31 @@
     <div class="container text-center" id="login-container">
       {% if messages %}
         {% for message in messages %}
-          {% ifequal message.tags "login_error error" %}
+          {% ifequal message.tags "user_exists error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "email_exists error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "password_unmatch error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "password_length error" %}
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
               <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> {{ message }}
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -56,32 +80,45 @@
           {% endifequal %}
         {% endfor %}
       {% endif %}
-      <h1 class="display-4 mb-4">Sign In</h1>
+      <h1 class="display-4 mb-4">Sign Up</h1>
       <div class="social-login">
-        <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button>
-        <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Login with Facebook Account</button>
-        {# <button type="button" class="btn btn-block btn-social btn-google"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button> #}
-        {# <button type="button" class="btn btn-block btn-social btn-facebook"><i class="fa fa-facebook" aria-hidden="true"></i> Login with Google Account</button> #}
+        <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Sign Up with Google Account</button>
+        <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Sign Up with Facebook Account</button>
       </div>
 
       <hr class="style-eight my-4">
-      <form class="" action="{% url 'accounts:login' %}" method="post">
+      <form class="" action="{% url 'accounts:register' %}" method="post">
         {% csrf_token %}
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="fa fa-user" aria-hidden="true"></i></span>
-          </div>
-          <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+        <div class="form-group">
+          <input type="text" class="form-control" id="username" name="username" placeholder="Username *" required>
         </div>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="fa fa-lock" aria-hidden="true"></i></span>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name">
+            </div>
           </div>
-          <input type="password" name="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name">
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        <div class="form-group">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Email *" required>
+        </div>
+
+        <div class="form-group">
+          <input type="password" class="form-control" id="password1" name="password1" placeholder="Password *" required>
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password *" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
       </form>
-      <p class="lead my-4 text-muted">Don't have an account? <a href="{% url 'accounts:register' %}" class="sign-up-link">Sign Up</a></p>
+      <p class="lead my-4 text-muted">Already have an account? <a href="{% url 'accounts:login' %}" class="sign-up-link">Sign In</a></p>
+      <p class="my-4 text-muted text-center">Fields with * are required</p>
     </div>
 
     <!--

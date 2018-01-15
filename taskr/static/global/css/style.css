@@ -71,6 +71,10 @@ span.invisible {
   cursor: pointer;
 }
 
+.job-row {
+  cursor: pointer; 
+}
+
 /* CUSTOM HR  */
 
 hr.style-eight {

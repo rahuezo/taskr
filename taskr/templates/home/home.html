@@ -39,7 +39,7 @@
             <button class="btn btn-outline-light mx-1 my-1" data-toggle="modal" data-target="#sign-in-modal">Sign in <span class="sr-only">(current)</span></button>
           </li>
           <li class="nav-item">
-            <button class="btn btn-link mx-1 my-1" type="button" name="button">Sign up</button>
+            <button class="btn btn-link mx-1 my-1" data-toggle="modal" data-target="#sign-up-modal">Sign up</button>
           </li>
         </ul>
       </div>
@@ -70,10 +70,8 @@
           </div>
           <div class="modal-body text-center">
             <div class="social-login">
-              <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button>
-              <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Login with Facebook Account</button>
-              {# <button type="button" class="btn btn-block btn-social btn-google"><i class="fa fa-google" aria-hidden="true"></i> Login with Google Account</button> #}
-              {# <button type="button" class="btn btn-block btn-social btn-facebook"><i class="fa fa-facebook" aria-hidden="true"></i> Login with Google Account</button> #}
+              <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Sign In with Google Account</button>
+              <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Sign In with Facebook Account</button>
             </div>
 
             <hr class="style-eight my-4">
@@ -94,6 +92,61 @@
               <button type="submit" class="btn btn-primary btn-block">Sign In</button>
             </form>
             <p class="lead my-4 text-muted">Don't have an account? <a href="" class="sign-up-link">Sign Up</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centered Sign Up Modal -->
+    <div class="modal fade" id="sign-up-modal" tabindex="-1" role="dialog" aria-labelledby="sign-up-modalTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="header px-3 py-2">
+            <p class="h4 text-center mb-4">Sign Up
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </p>
+          </div>
+          <div class="modal-body text-center">
+            <div class="social-login">
+              <button type="button" class="btn btn-outline-secondary btn-block"><i class="fa fa-google" aria-hidden="true"></i> Sign Up with Google Account</button>
+              <button type="button" class="btn btn-outline-primary btn-block"><i class="fa fa-facebook-square" aria-hidden="true"></i> Sign Up with Facebook Account</button>
+            </div>
+
+            <hr class="style-eight my-4">
+            <form class="" action="{% url 'accounts:login' %}" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username *">
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name">
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email *">
+              </div>
+
+              <div class="form-group">
+                <input type="password" class="form-control" id="password1" name="password1" placeholder="Password *">
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password *">
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+            <p class="lead my-4 text-muted">Already have an account? <a href="{% url 'accounts:login' %}" class="sign-up-link">Sign In</a></p>
+            <p class="my-4 text-muted text-center">Fields with * are required</p>
           </div>
         </div>
       </div>

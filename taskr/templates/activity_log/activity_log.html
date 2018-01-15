@@ -21,7 +21,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'global/img/taskr logo favicon.png' %}">
 
-    <title>taskr: Job View</title>
+    <title>taskr: My Activity</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -74,88 +74,52 @@
           {% endif %}
         </ul>
       </div>
+      {# </div> #}
     </nav>
-
-    <div class="container my-4 text-center">
-      {% if error %}
-      <h1 class="display-4">This job doesn't exist</h1>
-      {% else %}
-        {% with tasks|length as ntasks%}
-        <h1 class="display-4"><strong>{{ current_job.title }}</strong></h1>
-        {% if ntasks > 0 %}
-          <h3 class="my-4">{{ ntasks }} {% if ntasks == 1%}task{% else %}tasks{% endif %} &middot; {{ current_job.modified|date:"F d, Y" }}</h3>
-          <hr>
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <a class="btn {% if view == 'list' %}btn-dark{% else %}btn-outline-dark{% endif %}" href="{{ request.path }}?view=list"><i class="fa fa-list" aria-hidden="true"></i></a>
-            <a class="btn {% if view != 'list' %}btn-dark{% else %}btn-outline-dark{% endif %}" href="{{ request.path }}?view=table"><i class="fa fa-table" aria-hidden="true"></i></a>
-          </div>
-
-          {% if view == 'list' %}
-            {% for task in tasks %}
-            <div class="card my-4 {% if forloop.counter0|divisibleby:'2' %}border-focus{% endif %} job-row" data-container="body" data-toggle="popover" data-placement="top"
-            data-content="<button type='button' class='btn btn-outline-dark btn-block my-2'>Edit <i class='fa fa-pencil' aria-hidden='true'></i></button>
-              <form action='{% url 'dashboard:jobs:delete_task' job_id=current_job.pk %}' method='post'>
-                {% csrf_token %}
-                <input type='hidden' name='task-id' value='{{ task.pk }}' />
-                <button type='submit' class='btn btn-danger btn-block my-2'>Delete <i class='fa fa-trash-o' aria-hidden='true'></i></button>
-              </form>'">
-              <div class="card-body">
-                <h4 class="card-title mb-4">
-                  {{ task.title }}
-                  <small class="text-muted">
-                    &middot; {{ task.date|date:"F d, Y" }}
-                  </small>
-                </h4>
-                <div class="row text-center">
-                  <div class="col-sm-6">
-                    <p class="lead"><strong>{{ task.start|time:"g:i A"|lower }}</strong> to <strong>{{ task.end|time:"g:i A"|lower }}</strong></p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="lead">{% if task.notes|length == 0 %}<em class="text-muted"><i class="fa fa-ban" aria-hidden="true"></i> No Note</em>{% else %}<em>{{ task.notes }}</em>{% endif %}</p>
-                  </div>
-                </div>
+    <div class="container my-4">
+      {% if messages %}
+        {% for message in messages %}
+          {% ifequal message.tags "login_success success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-home" aria-hidden="true"></i></strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+        {% endfor %}
+      {% endif %}
+      <h1 class="display-4 text-center">My Activity</h1>
+      <div class="row text-center">
+        <div class="col-sm-3"><i class="fa fa-calendar-plus-o text-primary" aria-hidden="true"></i> = New Job</div>
+        <div class="col-sm-3"><i class="fa fa-calendar-plus-o text-success" aria-hidden="true"></i> = New Task</div>
+        <div class="col-sm-3"><i class="fa fa-pencil" aria-hidden="true"></i> = Edited Task</div>
+        <div class="col-sm-3"><i class="fa fa-calendar-minus-o text-danger" aria-hidden="true"></i> = Removed Task</div>
+      </div>
+      {% if activities|length > 0 %}
+        {% for activity in activities %}
+        <div class="card my-4 {% if forloop.counter0|divisibleby:'2' %}border-focus{% endif %}">
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-sm-2">
+                <h4 class="card-title">{{ activity.icon|safe }}</h4>
+              </div>
+              <div class="col-sm-4">
+                <h4 class="card-title">{{ activity.created|date:"F d, Y"}} {{ activity.created|time:"g:i A"|lower }}</h4>
+              </div>
+              <div class="col-sm-6">
+                <p class="card-text lead">{{ activity.description|safe }}</p>
               </div>
             </div>
-            {% endfor %}
-          {% else %}
-            <table class="table table-sm table-hover my-4">
-              <thead class="thead-dark">
-                <tr>
-                  <th scope="col">Title</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Start</th>
-                  <th scope="col">End</th>
-                  <th scope="col">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for task in tasks %}
-                  <tr class="job-row" data-container="body" data-toggle="popover" data-placement="top"
-                  data-content="<button type='button' class='btn btn-outline-dark btn-block my-2'>Edit <i class='fa fa-pencil' aria-hidden='true'></i></button>
-                    <form action='{% url 'dashboard:jobs:delete_task' job_id=current_job.pk %}' method='post'>
-                      {% csrf_token %}
-                      <input type='hidden' name='task-id' value='{{ task.pk }}' />
-                      <button type='submit' class='btn btn-danger btn-block my-2'>Delete <i class='fa fa-trash-o' aria-hidden='true'></i></button>
-                    </form>'">
-                    <th scope="row">{{ task.title }}</th>
-                    <td>{{ task.date|date:"F d, Y" }}</td>
-                    <td>{{ task.start|time:"g:i A"|lower }}</td>
-                    <td>{{ task.end|time:"g:i A"|lower }}</td>
-                    <td>
-                      <span class="task-note-text">{% if task.notes|length == 0 %}<em class="text-muted"><i class="fa fa-ban" aria-hidden="true"></i> No Note</em>{% else %}<em>{{ task.notes }}</em>{% endif %}</span>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endif %}
-        {% else %}
-          <h1 class="display-4">This job doesn't have any tasks yet.</h1>
-          <p class="w-50 ml-auto mr-auto my-4">
-            <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#task-modal" onclick="setTaskModalParams('{{ current_job.title }}', {{ current_job.pk }});"><i class="fa fa-plus" aria-hidden="true"></i> Add Task</button>
-          </p>
-        {% endif%}
-        {% endwith %}
+
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <h1 class="display-4 text-center text-muted">You have no recent activity.</h1>
+      <p class="w-50 ml-auto mr-auto my-4">
+        <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#job-modal" onclick="setJobModalParams();"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
+      </p>
       {% endif %}
     </div>
 
@@ -221,6 +185,52 @@
       </div>
     </div>
 
+    <!-- Centered Add Job Modal -->
+    <div class="modal fade" id="job-modal" tabindex="-1" role="dialog" aria-labelledby="job-modalTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="header px-3 py-2">
+            <p class="h4 text-center mb-4">Add Job<strong id="project-name"></strong>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </p>
+          </div>
+          <div class="modal-body">
+            <form id="add-job-form" action="{% url 'dashboard:jobs:add_job' %}" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="job-title">Title *</label>
+                    <input type="text" class="form-control" id="job-title" name="job-title" placeholder="e.g. My Photography Job" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="job-date">Date</label>
+                    <input type="date" class="form-control" id="job-date" name="job-date">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="job-description">Description</label>
+                    <textarea class="form-control" id="job-description" name="job-description"></textarea>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Add Job</button>
+              <p class="my-4 text-muted text-center">Fields with * are required</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -231,32 +241,19 @@
     <!-- Local JS -->
     <script type="text/javascript">
       $(document).ready(function(){
-        $('.job-row').popover({
-          html:true,
-        });
 
-        $('.card.job-row').click(function(){
-          if ($(this).hasClass('bg-danger')) {
-            $(this).removeClass('bg-danger');
-          } else {
-            $(this).addClass('bg-danger');
-            $('.card.job-row').not(this).removeClass('bg-danger');
-          }
-        });
 
-        $('tr.job-row').click(function(){
-          if ($(this).hasClass('bg-danger')) {
-            $(this).removeClass('bg-danger');
-          } else {
-            $(this).addClass('bg-danger');
-            $('tr.job-row').not(this).removeClass('bg-danger');
-          }
-        });
+
       });
 
-      $('.job-row').on('click', function(e){
-        $('.job-row').not(this).popover('hide');
-      });
+      function searchFocus(element) {
+        $(element).removeClass('bg-dark');
+        $(element).css('width', '400px !important')
+
+      }
+      function searchBlur(element) {
+        $(element).addClass('bg-dark');
+      }
 
       function setTaskModalParams(title, job_id) {
         console.log(job_id);
@@ -264,6 +261,26 @@
         $('#job-id').val(job_id);
 
         console.log($('#job-id').val());
+      }
+
+      function setJobModalParams() {
+        let date = new Date();
+        let mm, dd, yyyy, full_date;
+
+        mm = date.getMonth() + 1;
+        dd = date.getDate();
+        yyyy = date.getFullYear();
+
+        if (mm < 10) {
+          mm = '0' + mm;
+        }
+        if (dd < 10) {
+          dd = '0' + dd;
+        }
+        full_date = `${yyyy}-${mm}-${dd}`;
+
+        console.log(full_date);
+        $('#job-date').val(full_date);
       }
 
       function validateTaskForm() {
@@ -286,25 +303,23 @@
         }
       }
 
-      function moreOptions(element) {
-        let code = `<td>
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-outline-dark"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-            <button type="button" class="btn btn-danger">Delete <i class="fa fa-trash-o" aria-hidden="true"></i></button>
-          </div>
-        </td>`;
-        let ntd = $(element).children('td').length;
-        let notes = $(element).children('td')[ntd - 1];
-        let notes_copy = $(element).children('td')[ntd - 1];
-        console.log(notes);
-        if ( ntd > 4) {
-          // $($(element).children('td')[ntd - 1]).remove();
-          $(notes).html(notes_copy)
-        } else {
-          $(notes).html(code);
-        }
+      function validateJobForm() {
+        let job_title = $('#job-title').val();
 
-        // $(element).append(code);
+        let code = `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+          <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> A job title is required!
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>`;
+
+        if (job_title.length) {
+          console.log("Can submit");
+          $('#add-job-form').submit();
+        } else {
+          console.log("Cannot submit");
+          $('#add-job-form-error').append(code);
+        }
       }
     </script>
   </body>

@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'accounts',
     'jobs',
     'tasks',
+    'activity_log',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
