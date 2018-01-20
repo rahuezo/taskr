@@ -75,12 +75,61 @@
         </ul>
       </div>
     </nav>
+
     <div class="container my-4">
       {% if messages %}
         {% for message in messages %}
           {% ifequal message.tags "login_success success" %}
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
-              <strong><i class="fa fa-home" aria-hidden="true"></i></strong> {{ message }}
+              <strong><i class="fa fa-home" aria-hidden="true"></i></strong> {{ message|safe }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "added_job success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-plus" aria-hidden="true"></i></strong> {{ message|safe }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "deleted_job success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-trash" aria-hidden="true"></i></strong> {{ message|safe }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "added_task success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-plus" aria-hidden="true"></i></strong> {{ message|safe }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "deleted_task success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-trash" aria-hidden="true"></i></strong> {{ message|safe }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "edited_job success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-pencil" aria-hidden="true"></i></strong> {{ message|safe }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endifequal %}
+          {% ifequal message.tags "edited_task success" %}
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              <strong><i class="fa fa-pencil" aria-hidden="true"></i></strong> {{ message|safe }}
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -90,14 +139,27 @@
       {% endif %}
 
       {% if jobs|length > 0 %}
+        <button class="btn btn-dark btn-block mb-2" data-toggle="modal" data-target="#job-modal" onclick="setJobModalParams();"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
         {% for job in jobs %}
         <div class="card my-4 {% if forloop.counter0|divisibleby:'2' %}border-focus{% endif %}">
           <div class="card-body">
             {% with job.task_set.all|length as ntasks %}
+            <span class="pull-right">
+              <div class="dropdown show">
+                <a class="btn btn-link ellipsis" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="dropdownMenuLink">
+                  <button class="btn btn-dark w-75 my-1" data-toggle="modal" data-target="#edit-job-modal" onclick="setJobToEdit('{{ job.title }}', {{ job.pk }}, '{{ job.created|date:"Y-m-d"  }}', '{{ job.description }}');">Edit <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                  <button class='btn btn-danger w-75 my-1' data-toggle="modal" data-target="#delete-job-modal" onclick="setJobToDelete('{{ job.title }}', {{ job.pk }});">Delete <i class='fa fa-trash' aria-hidden='true'></i></button>
+                </div>
+              </div>
+            </span>
+
             <h4 class="card-title">
               {{ job.title }}
               <small class="text-muted">
-                &middot; {{ ntasks }} {% if ntasks == 1%}task{% else %}tasks{% endif %} &middot; {{ job.modified|date:"F d, Y" }}
+                &middot; {{ ntasks }} {% if ntasks == 1%}task{% else %}tasks{% endif %} &middot; {{ job.created|date:"F d, Y" }}
               </small>
             </h4>
             <p class="card-text lead">{{ job.description }}</p>
@@ -150,10 +212,12 @@
         </div>
         {% endfor %}
       {% else %}
-      <h1 class="display-4 text-center">You have no Jobs at the moment.</h1>
-      <p class="w-50 ml-auto mr-auto my-4">
-        <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#job-modal" onclick="setJobModalParams();"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
-      </p>
+      <div class="section empty">
+        <h1 class="display-4 text-center text-muted">You have no Jobs at the moment.</h1>
+        <p class="ml-auto mr-auto my-4">
+          <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#job-modal" onclick="setJobModalParams();"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
+        </p>
+      </div>
       {% endif %}
     </div>
 
@@ -219,6 +283,79 @@
       </div>
     </div>
 
+    <!-- Modal Delete Job Confirmation -->
+    <div class="modal fade" id="delete-job-modal" tabindex="-1" role="dialog" aria-labelledby="delete-job-modalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="delete-job-modalLabel">Confirm Job Deletion</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="lead">Are you sure you want to delete <strong id="job-name"></strong>?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            <form action='{% url 'dashboard:jobs:delete_job' %}' method='post'>
+              {% csrf_token %}
+              <input type='hidden' id="job-to-delete-id" name='job-to-delete-id' />
+              <button type='submit' class='btn btn-success'>Yes, delete.</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centered Edit Job Modal -->
+    <div class="modal fade" id="edit-job-modal" tabindex="-1" role="dialog" aria-labelledby="edit-job-modalTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="header px-3 py-2">
+            <p class="h4 text-center mb-4">Edit Job <strong id="edit-project-name"></strong>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </p>
+          </div>
+          <div class="modal-body">
+            <form id="edit-job-form" action="{% url 'dashboard:jobs:edit_job' %}" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="edit-job-title">Title *</label>
+                    <input type="text" class="form-control" id="edit-job-title" name="job-title" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="edit-job-date">Date</label>
+                    <input type="date" class="form-control" id="edit-job-date" name="job-date">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="edit-job-description">Description</label>
+                    <textarea class="form-control" id="edit-job-description" name="job-description"></textarea>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="edit-job-id" name="job-id" value="">
+              <button type="submit" class="btn btn-primary btn-block">Update Job</button>
+              <p class="my-4 text-muted text-center">Fields with * are required</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Centered Add Job Modal -->
     <div class="modal fade" id="job-modal" tabindex="-1" role="dialog" aria-labelledby="job-modalTitle" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -275,7 +412,9 @@
     <!-- Local JS -->
     <script type="text/javascript">
       $(document).ready(function(){
-
+        $('.btn.btn-link.ellipsis').popover({
+          html:true,
+        });
 
 
       });
@@ -290,11 +429,8 @@
       }
 
       function setTaskModalParams(title, job_id) {
-        console.log(job_id);
         $('#project-name').text(title);
         $('#job-id').val(job_id);
-
-        console.log($('#job-id').val());
       }
 
       function setJobModalParams() {
@@ -335,6 +471,20 @@
           console.log("Cannot submit");
           $('#add-task-form-error').append(code);
         }
+      }
+
+      function setJobToDelete(job_name, job_id) {
+        $('#job-to-delete-id').val(job_id);
+        $('#job-name').text(job_name);
+      }
+
+      function setJobToEdit(job_name, job_id, job_date, job_description) {
+        console.log(job_date)
+        $('#edit-job-id').val(job_id);
+        $('#edit-project-name').text(job_name);
+        $('#edit-job-title').val(job_name);
+        $('#edit-job-date').val(job_date);
+        $('#edit-job-description').val(job_description);
       }
 
       function validateJobForm() {

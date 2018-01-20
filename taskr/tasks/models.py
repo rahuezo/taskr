@@ -17,7 +17,8 @@ class Task(models.Model):
     def save(self, *args, **kwargs):
         """On save, set task title"""
         if len(self.title) == 0:
-            self.title = "Task {0}".format(timezone.now().strftime('%m%d%y'))
+            self.title = "Task {0}".format(timezone.now().strftime('%H%M%S'))
+
         return super(Task, self).save(*args, **kwargs)
 
     def __str__(self):
