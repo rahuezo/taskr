@@ -1,0 +1,60 @@
+{% if messages %}
+  {% for message in messages %}
+    {% ifequal message.tags "login_success success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-home" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+    {% ifequal message.tags "added_job success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-plus" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+    {% ifequal message.tags "deleted_job success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-trash" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+    {% ifequal message.tags "added_task success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-plus" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+    {% ifequal message.tags "deleted_task success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-trash" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+    {% ifequal message.tags "edited_job success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-pencil" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+    {% ifequal message.tags "edited_task success" %}
+      <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <strong><i class="fa fa-pencil" aria-hidden="true"></i></strong> {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endifequal %}
+  {% endfor %}
+{% endif %}

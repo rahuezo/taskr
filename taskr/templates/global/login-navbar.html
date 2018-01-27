@@ -1,0 +1,19 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand ml-3" href="{% url 'home:index' %}">
+    <img src="{% static 'global/img/taskr logo.png' %}" alt=""> taskr
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <button class="btn btn-link mx-1 my-1">About</button>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'accounts:register' %}" class="btn btn-link mx-1 my-1"><strong>Sign up</strong></a>
+      </li>
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,94 @@
+<div class="container my-4">
+  {% include 'dashboard/alerts.html' %}
+
+  {% if jobs|length > 0 %}
+    <button class="btn btn-dark btn-block mb-2" data-toggle="modal" data-target="#job-modal" onclick="setJobModalParams();"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
+    {% for job in jobs %}
+      <div class="card my-4 {% if forloop.counter0|divisibleby:'2' %}border-focus{% endif %}">
+        <div class="card-body">
+          {% with job.task_set.all|length as ntasks %}
+            <!-- JOB MENU -->
+            <span class="pull-right">
+              <div class="dropdown show">
+                <a class="btn btn-link ellipsis" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="dropdownMenuLink">
+                  <button class="btn btn-dark w-75 my-1" data-toggle="modal" data-target="#edit-job-modal" onclick="setJobToEdit('{{ job.title }}', {{ job.pk }}, '{{ job.created|date:"Y-m-d"  }}', '{{ job.description }}');">Edit <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                  <button class='btn btn-danger w-75 my-1' data-toggle="modal" data-target="#delete-job-modal" onclick="setJobToDelete('{{ job.title }}', {{ job.pk }});">Delete <i class='fa fa-trash' aria-hidden='true'></i></button>
+                </div>
+              </div>
+            </span>
+            <!-- END JOB MENU -->
+
+            <!-- JOB TITLE, NUMBER OF TASKS, CREATION DATE, AND DESCRIPTION -- >
+            <h4 class="card-title">
+              {{ job.title }}
+              <small class="text-muted">
+                &middot; {{ ntasks }} {% if ntasks == 1%}task{% else %}tasks{% endif %} &middot; {{ job.created|date:"F d, Y" }}
+              </small>
+            </h4>
+            <p class="card-text lead">{{ job.description }}</p>
+            <!-- END JOB TITLE... -->
+
+            <!-- IF THERE ARE TASKS TO VIEW -->
+            {% if  ntasks > 0 %}
+              <p class="lead text-center text-muted">Showing most recent task</p>
+              <table class="table table-sm my-4 text-center">
+                <thead>
+                  <tr class="text-muted">
+                    <td scope="col">Title</td>
+                    <td scope="col">Date</td>
+                    <td scope="col">Start</td>
+                    <td scope="col">End</td>
+                    <td scope="col">Notes</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% with job.task_set.all.last as task %}
+                  <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.date|date:"m/d/y" }}</td>
+                    <td>{{ task.start|time:"g:i A"|lower }}</td>
+                    <td>{{ task.end|time:"g:i A"|lower }}</td>
+                    <td>{% if task.notes|length == 0 %}<i class="fa fa-ban text-muted" aria-hidden="true"></i>{% else %}<em>{{ task.notes|truncatewords:10 }}</em>{% endif %}</td>
+                  </tr>
+                  {% endwith %}
+                </tbody>
+              </table>
+
+              <!-- ADD TASK AND VIEW JOB BUTTONS -->
+              <div class="row">
+                <div class="col-sm-6">
+                  <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#task-modal" onclick="setTaskModalParams('{{ job.title }}', {{ job.pk }});"><i class="fa fa-plus" aria-hidden="true"></i> Add Task</button>
+                </div>
+                <div class="col-sm-6">
+                  <a href="{% url 'dashboard:jobs:show_job' job_id=job.pk %}" class="btn btn-outline-primary btn-block mb-2"><i class="fa fa-eye" aria-hidden="true"></i> View Job</a>
+                </div>
+              </div>
+              <!-- END ADD TASK AND VIEW JOB BUTTONS -->
+
+            {% else %}
+              <p class="text-center text-muted lead my-4">There are no tasks yet.</p>
+              <div class="row">
+                <div class="col-sm-6">
+                  <button class="btn btn-outline-dark btn-block mb-2" data-toggle="modal" data-target="#task-modal" onclick="setTaskModalParams('{{ job.title }}', {{ job.pk }});"><i class="fa fa-plus" aria-hidden="true"></i> Add Task</button>
+                </div>
+                <div class="col-sm-6">
+                  <a href="{% url 'dashboard:jobs:show_job' job_id=job.pk %}" class="btn btn-outline-primary btn-block mb-2"><i class="fa fa-eye" aria-hidden="true"></i> View Job</a>
+                </div>
+              </div>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+  <div class="section empty">
+    <h1 class="display-4 text-center text-muted">You have no Jobs at the moment.</h1>
+    <p class="ml-auto mr-auto my-4">
+      <button class="btn btn-dark btn-block mb-2" data-toggle="modal" data-target="#job-modal" onclick="setJobModalParams();"><i class="fa fa-plus" aria-hidden="true"></i> Add Job</button>
+    </p>
+  </div>
+  {% endif %}
+</div>
